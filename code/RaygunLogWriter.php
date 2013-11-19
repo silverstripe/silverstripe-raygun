@@ -12,7 +12,18 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	}
 
 	function _write($message) {
-		$this->error_handler($message['message']['errno'], $message['message']['errstr'], $message['message']['errfile'], $message['message']['errline']);
+		// Reverse-engineer the SilverStripe-repackaged exception
+		if(preg_match('/^Uncaught ([A-Za-z0-9_]+):(.*)$/', $message['message']['errstr'], $matches)
+				&& ($matches[1] == 'Exception' || is_subclass_of($matches[1], 'Exception'))) {
+
+			$message['message']['errstr'] = $matches[1] . ': ' . $matches[2];
+			$ex = new ReportedException($message['message']);
+			$this->exception_handler($ex);
+
+		// Regular error handling
+		} else {
+			$this->error_handler($message['message']['errno'], $message['message']['errstr'], $message['message']['errfile'], $message['message']['errline']);
+		}
 	}
 
 	static function factory($config) {
@@ -21,17 +32,37 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 
 	function exception_handler($exception) {
 		$this->client->SendException($exception);
-
-		if($callback = $this->postException) {
-			$callback($exception);
-		}
-	}
-
-	function setPostExceptionCallback($postException) {
-		$this->postException = $postException;
 	}
 
 	function error_handler($errno, $errstr, $errfile, $errline ) {
 		$this->client->SendError($errno, $errstr, $errfile, $errline);
+	}
+}
+
+/**
+ * Deal with SilverStripe's limited support for custom exeption handlers.
+ * Can't be a real exception as then we can't override final methods.
+ */
+class ReportedException {
+	protected $data;
+
+	function __construct($data) {
+		$this->data = $data;
+	}
+
+	function getMessage() {
+		return $this->data['errstr'];
+	}
+	function getCode() {
+		return $this->data['errno'];
+	}
+	function getTrace() {
+		return $this->data['errcontext'];
+	}
+	function getFile() {
+		return $this->data['errfile'];
+	}
+	function getLine() {
+		return $this->data['errline'];
 	}
 }
