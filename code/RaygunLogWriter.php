@@ -4,12 +4,6 @@ require_once '../vendor/autoload.php';
 require_once THIRDPARTY_PATH . '/Zend/Log/Writer/Abstract.php';
 
 class RaygunLogWriter extends Zend_Log_Writer_Abstract {
-	/**
-	 * @config
-	 * @var string The API Key for your application, given on the Raygun 'Application Settings' page
-	 */
-	private static $api_key;
-
 	protected $client;
 	protected $postException;
 
