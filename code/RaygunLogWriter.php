@@ -28,6 +28,11 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 
 		// Regular error handling
 		} else {
+			// errno param can't be empty for Raygun, as it uses \ErrorException to create the error
+			if(empty($message['message']['errno'])) {
+				$message['message']['errno'] = 0;
+			}
+
 			$this->error_handler($message['message']['errno'], $message['message']['errstr'], $message['message']['errfile'], $message['message']['errline']);
 		}
 	}
