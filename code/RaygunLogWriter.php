@@ -1,6 +1,6 @@
 <?php
 
-require_once '../vendor/autoload.php';
+require_once BASE_PATH . '/vendor/autoload.php';
 require_once THIRDPARTY_PATH . '/Zend/Log/Writer/Abstract.php';
 
 class RaygunLogWriter extends Zend_Log_Writer_Abstract {
