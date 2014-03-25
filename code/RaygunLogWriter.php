@@ -33,7 +33,7 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 				$message['message']['errno'] = 0;
 			}
 
-			$this->error_handler($message['message']['errno'], $message['message']['errstr'], $message['message']['errfile'], $message['message']['errline']);
+			$this->error_handler($message['message']['errno'], $message['message']['errstr'], $message['message']['errfile'], $message['message']['errline'], array($message['priorityName']));
 		}
 	}
 
@@ -45,9 +45,9 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 		$this->client->SendException($exception);
 	}
 
-	function error_handler($errno, $errstr, $errfile, $errline ) {
+	function error_handler($errno, $errstr, $errfile, $errline, $tags ) {
 		if($errno === '') $errno = 0; // compat with ErrorException
-		$this->client->SendError($errno, $errstr, $errfile, $errline);
+		$this->client->SendError($errno, $errstr, $errfile, $errline, $tags);
 	}
 
 	function shutdown_function() {
