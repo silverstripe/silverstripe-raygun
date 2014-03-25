@@ -14,4 +14,8 @@ Then, load in the RayGun application key. Thi is defined in `_ss_environment.php
 
 	define('SS_RAYGUN_APP_KEY', 'dwhouq3845y98uiof==');
 
-TO DO: Allow definition in project, rather than environment, configuration.
+Alternatively, the API key can be defined in a yaml config file, as well as the minimum level for the error reporting
+
+	RaygunLogWriter:
+	  api_key: 'ABCDEF123456=='
+	  level: 'SS_Log::WARNING'
