@@ -53,7 +53,7 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	function shutdown_function() {
 		$error = error_get_last();
 		if($error && ($error['type'] & (E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_PARSE)) != 0) {
-			$this->error_handler($error['type'], $error['message'], $error['file'], $error['line']);
+			$this->error_handler($error['type'], $error['message'], $error['file'], $error['line'], null);
 		}
 	}
 }
