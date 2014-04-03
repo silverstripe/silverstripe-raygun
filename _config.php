@@ -7,7 +7,9 @@ if(empty($raygunAPIKey) && defined('SS_RAYGUN_APP_KEY')) {
 
 if(!empty($raygunAPIKey)) {
 	$raygun = new RaygunLogWriter($raygunAPIKey);
-	SS_Log::add_writer($raygun, SS_Log::WARN, '<=');
+	$levelConfig = Config::inst()->get('RaygunLogWriter', 'level');
+	$level = defined($levelConfig) ? constant($levelConfig) : SS_Log::WARN;
+	SS_Log::add_writer($raygun, $level, '<=');
 	register_shutdown_function(array($raygun, 'shutdown_function'));
 } else {
 	if(Director::isLive()) {
