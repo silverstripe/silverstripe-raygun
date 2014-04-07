@@ -15,6 +15,11 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 
 	function __construct($appKey) {
 		$this->client = new \Raygun4php\RaygunClient($appKey);
+
+		// keep track of the current user (if available) so we can identify it in Raygun
+		if(Member::currentUserID()) {
+			$this->client->SetUser(Member::currentUser()->Email);
+		}
 	}
 
 	function _write($message) {
