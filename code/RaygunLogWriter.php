@@ -1,26 +1,36 @@
 <?php
-
 require_once BASE_PATH . '/vendor/autoload.php';
 require_once THIRDPARTY_PATH . '/Zend/Log/Writer/Abstract.php';
 
 class RaygunLogWriter extends Zend_Log_Writer_Abstract {
+
 	/**
 	 * @config
 	 * @var string The API Key for your application, given on the Raygun 'Application Settings' page
 	 */
 	private static $api_key;
 
-	protected $client;
-	protected $postException;
+	/**
+	 * @var String
+	 */
+	protected $apiKey;
 
-	function __construct($appKey) {
-		$this->client = new \Raygun4php\RaygunClient($appKey);
+	/**
+	 * @var \Raygun4php\RaygunClient
+	 */
+	protected $client;
+
+	/**
+	 * @param String $apiKey
+	 */
+	function __construct($apiKey) {
+		$this->apiKey = $apiKey;
 	}
 
 	function _write($message) {
 		// keep track of the current user (if available) so we can identify it in Raygun
 		if(Member::currentUserID()) {
-			$this->client->SetUser(Member::currentUser()->Email);
+			$this->getClient()->SetUser(Member::currentUser()->Email);
 		}
 
 		// Reverse-engineer the SilverStripe-repackaged exception
@@ -47,12 +57,12 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	}
 
 	function exception_handler($exception) {
-		$this->client->SendException($exception);
+		$this->getClient()->SendException($exception);
 	}
 
 	function error_handler($errno, $errstr, $errfile, $errline, $tags ) {
 		if($errno === '') $errno = 0; // compat with ErrorException
-		$this->client->SendError($errno, $errstr, $errfile, $errline, $tags);
+		$this->getClient()->SendError($errno, $errstr, $errfile, $errline, $tags);
 	}
 
 	function shutdown_function() {
@@ -60,6 +70,24 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 		if($error && ($error['type'] & (E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_PARSE)) != 0) {
 			$this->error_handler($error['type'], $error['message'], $error['file'], $error['line'], null);
 		}
+	}
+
+	/**
+	 * @return \Raygun4php\RaygunClient
+	 */
+	function getClient() {
+		if(!$this->client) {
+			$this->client = new \Raygun4php\RaygunClient($this->apiKey);
+		}
+
+		return $this->client;
+	}
+
+	/**
+	 * @param \Raygun4php\RaygunClient
+	 */
+	function setClient($client) {
+		$this->client = $client;
 	}
 }
 
