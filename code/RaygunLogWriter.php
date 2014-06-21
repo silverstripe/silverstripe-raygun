@@ -52,8 +52,8 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 		}
 	}
 
-	static function factory($config) {
-		return new RaygunLogWriter($config['app_key']);
+	public static function factory($config) {
+		return Injector::inst()->create('RaygunLogWriter', $config['app_key']);
 	}
 
 	function exception_handler($exception) {
