@@ -6,7 +6,7 @@ if(empty($raygunAPIKey) && defined('SS_RAYGUN_APP_KEY')) {
 }
 
 if(!empty($raygunAPIKey)) {
-	$raygun = new RaygunLogWriter($raygunAPIKey);
+	$raygun = Injector::inst()->create('RaygunLogWriter', $raygunAPIKey);
 	$levelConfig = Config::inst()->get('RaygunLogWriter', 'level');
 	$level = defined($levelConfig) ? constant($levelConfig) : SS_Log::WARN;
 	SS_Log::add_writer($raygun, $level, '<=');
