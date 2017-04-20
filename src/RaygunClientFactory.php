@@ -3,7 +3,9 @@
 namespace SilverStripe\Raygun;
 
 use SilverStripe\Core\Injector\Factory;
+use SilverStripe\Security\Member;
 use Graze\Monolog\Handler\RaygunHandler;
+use Raygun4php\RaygunClient;
 
 class RaygunClientFactory implements Factory
 {
@@ -13,7 +15,7 @@ class RaygunClientFactory implements Factory
      *
      * @var string
      */
-    private $apiEnvKey = 'RAYGUN_API_KEY';
+    private $apiEnvKey = 'SS_RAYGUN_APP_KEY';
 
     /**
      * Wrapper to get the Raygun API key from the .env file to pass through to

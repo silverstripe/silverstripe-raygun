@@ -1,7 +1,9 @@
 SilverStripe\Core\Injector\Injector:
-  Logger:
+  Psr\Log\LoggerInterface:
     calls:
-      - [ pushHandler, [ %MeadSteve\RayGunolog\RayGunHandler ]] 
-  MeadSteve\RayGunolog\RayGunHandler:
+      - [ pushHandler, [ %$Graze\Monolog\Handler\RaygunHandler ]]
+  Graze\Monolog\Handler\RaygunHandler:
     constructor:
-      RaygunClient: %Raygun4php\RaygunClient
+      RaygunClient: %$Raygun4php\RaygunClient
+  Raygun4php\RaygunClient:
+    factory: 'SilverStripe\Raygun\RaygunClientFactory'
