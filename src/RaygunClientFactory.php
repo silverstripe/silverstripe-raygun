@@ -4,6 +4,7 @@ namespace SilverStripe\Raygun;
 
 use SilverStripe\Core\Injector\Factory;
 use SilverStripe\Security\Member;
+use SilverStripe\Control\Session;
 use Graze\Monolog\Handler\RaygunHandler;
 use Raygun4php\RaygunClient;
 
@@ -15,7 +16,12 @@ class RaygunClientFactory implements Factory
      *
      * @var string
      */
-    private $apiEnvKey = 'SS_RAYGUN_APP_KEY';
+    const RAYGUN_APP_KEY_NAME = 'SS_RAYGUN_APP_KEY';
+
+    /**
+     * @var Raygun4php\RaygunClient
+     */
+    protected $client;
 
     /**
      * Wrapper to get the Raygun API key from the .env file to pass through to
@@ -28,25 +34,33 @@ class RaygunClientFactory implements Factory
     public function create($service, array $params = [])
     {
         // extract api key from .env file
-        $apiKey = getenv($this->apiEnvKey);
+        $apiKey = (string) getenv(self::RAYGUN_APP_KEY_NAME);
 
         // log error to warn user that exceptions will not be logged to Raygun
-        if ($apiKey === false) {
-            error_log("You need to set the $this->apiEnvKey environment variable in order to log to Raygun.");
+        if (empty($apiKey)) {
+            $name = self::RAYGUN_APP_KEY_NAME;
+            error_log("You need to set the {$name} environment variable in order to log to Raygun.");
         }
 
         // setup new client
-        $client = new RaygunClient($apiKey);
+        $this->client = new RaygunClient($apiKey);
 
-        // check if there is a current logged in user
-        $member = Member::currentUser();
+        $this->filterSensitiveData();
 
-        // by default just set the member email as the user
-        if ($member) {
-            $client->SetUser($member->Email);
-        }
+        return $this->client;
+    }
 
-        return $client;
+
+    protected function filterSensitiveData()
+    {
+        // Filter sensitive data out of server variables
+        $this->client->setFilterParams([
+            'SS_DATABASE_USERNAME' => true,
+            'SS_DATABASE_PASSWORD' => true,
+            'SS_DEFAULT_ADMIN_USERNAME' => true,
+            'SS_DEFAULT_ADMIN_PASSWORD' => true,
+            self::RAYGUN_APP_KEY_NAME => true,
+        ]);
     }
 
 }
