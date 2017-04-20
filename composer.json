@@ -15,5 +15,10 @@
         "mindscape/raygun4php": "*@stable",
         "silverstripe/framework": "^4.0",
         "graze/monolog-extensions": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "SilverStripe\\Raygun\\": "src/"
+        }
     }
 }
