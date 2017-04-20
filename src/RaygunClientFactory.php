@@ -2,7 +2,7 @@
 
 namespace SilverStripe\Raygun;
 
-use SilverStripe\Framework\Injector\Factory;
+use SilverStripe\Core\Injector\Factory;
 use Graze\Monolog\Handler\RaygunHandler;
 
 class RaygunClientFactory implements Factory
