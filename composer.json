@@ -1,18 +1,19 @@
 {
-	"name": "silverstripe/raygun",
-	"type": "silverstripe-module",
-	"description": "RayGun.io integration for SilverStripe",
-	"homepage": "http://github.com/silverstripe-labs/silverstripe-raygun",
-	"license": "BSD-3-Clause",
-	"keywords": ["silverstripe", "raygun", "logging"],
-	"authors": [
-		{
-			"name": "Sam Minnee",
-			"homepage": "http://github.com/sminnee"
-		}
-	],
-	"require": {
-		"mindscape/raygun4php": "*@stable",
-		"silverstripe/framework": ">=2.4.0.0"
-	}
+    "name": "silverstripe/raygun",
+    "type": "silverstripe-module",
+    "description": "RayGun.io integration for SilverStripe",
+    "homepage": "http://github.com/silverstripe-labs/silverstripe-raygun",
+    "license": "BSD-3-Clause",
+    "keywords": ["silverstripe", "raygun", "logging"],
+    "authors": [
+        {
+            "name": "Sam Minnee",
+            "homepage": "http://github.com/sminnee"
+        }
+    ],
+    "require": {
+        "mindscape/raygun4php": "*@stable",
+        "silverstripe/framework": "^4.0",
+        "graze/monolog-extensions": "^1.6"
+    }
 }
