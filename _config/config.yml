@@ -1,0 +1,7 @@
+SilverStripe\Core\Injector\Injector:
+  Logger:
+    calls:
+      - [ pushHandler, [ %MeadSteve\RayGunolog\RayGunHandler ]] 
+  MeadSteve\RayGunolog\RayGunHandler:
+    constructor:
+      RaygunClient: %Raygun4php\RaygunClient
