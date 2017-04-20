@@ -12,7 +12,7 @@ composer require silverstripe/raygun
 
 Add the following to your `.env` file:
 
-```
+```ini
 SS_RAYGUN_APP_KEY="dwhouq3845y98uiof=="
 ```
 
@@ -28,7 +28,21 @@ Graze\Monolog\Handler\RaygunHandler:
 
 ## Filtering
 
-Some error data will be too sensitive to transmit to an external service, such as credit card details or passwords. Since this data is very application specific, Raygun doesn't filter out anything by default. You can configure to either replace or otherwise transform specific values based on their keys. These transformations apply to form data (`$_POST`), custom user data, HTTP headers, and environment data (`$_SERVER`). It does not filter the URL or its `$_GET` parameters, or custom message strings. Since Raygun doesn't log method arguments in stack traces, those don't need filtering. All key comparisons are case insensitive.
+Raygun will send the following data:
+
+- $_POST
+- $_SERVER
+- $_GET (included in URL also)
+
+By default we filter out some sensitive SilverStripe details which appear in the $_SERVER variable. These include:
+
+- SS_DATABASE_USERNAME
+- SS_DATABASE_PASSWORD
+- SS_DEFAULT_ADMIN_USERNAME
+- SS_DEFAULT_ADMIN_PASSWORD
+- SS_RAYGUN_APP_KEY
+
+You will likely want to filter out other sensitive data such as credit cards, passwords etc. You can do this in your `mysite/_config.php` file. These rules are applied to $_SERVER, $_POST and $_GET data. All key comparisons are case insensitive.
 
 Example implementation in mysite/_config.php:
 
