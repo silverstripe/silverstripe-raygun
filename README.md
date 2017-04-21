@@ -21,9 +21,10 @@ SS_RAYGUN_APP_KEY="dwhouq3845y98uiof=="
 You can define the error reporting level in your YAML config:
 
 ```yml
-Graze\Monolog\Handler\RaygunHandler:
-  constructor:
-    level: 'error'
+SilverStripe\Core\Injector\Injector:
+  Graze\Monolog\Handler\RaygunHandler:
+    constructor:
+      level: 'error'
 ```
 
 ## Filtering
