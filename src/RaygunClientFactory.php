@@ -27,8 +27,6 @@ class RaygunClientFactory implements Factory
      * Wrapper to get the Raygun API key from the .env file to pass through to
      * the Raygun client.
      *
-     * Also set the user to the current member if applicable.
-     *
      * {@inheritdoc}
      */
     public function create($service, array $params = [])
@@ -49,7 +47,6 @@ class RaygunClientFactory implements Factory
 
         return $this->client;
     }
-
 
     protected function filterSensitiveData()
     {

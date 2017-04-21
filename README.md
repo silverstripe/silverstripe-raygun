@@ -22,7 +22,7 @@ You can define the error reporting level in your YAML config:
 
 ```yml
 SilverStripe\Core\Injector\Injector:
-  Graze\Monolog\Handler\RaygunHandler:
+  SilverStripe\Raygun\RaygunHandler:
     constructor:
       level: 'error'
 ```
@@ -51,13 +51,13 @@ Example implementation in mysite/_config.php:
 <?php
 
 $client = Injector::inst()->get(Raygun4php\RaygunClient::class);
-$client->setFilterParams([
+$client->setFilterParams(array_merge($client->getFilterParams(), [
     'php_auth_pw' => true,
     '/password/i' => true,
 	'Email' => function($key, $val) {
         return substr($val, 0, 5) . '...';
     }
-]);
+]));
 ```
 
 More information about accepted filtering formats is available
