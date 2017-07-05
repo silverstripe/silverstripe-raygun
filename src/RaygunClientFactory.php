@@ -3,9 +3,6 @@
 namespace SilverStripe\Raygun;
 
 use SilverStripe\Core\Injector\Factory;
-use SilverStripe\Security\Member;
-use SilverStripe\Control\Session;
-use Graze\Monolog\Handler\RaygunHandler;
 use Raygun4php\RaygunClient;
 
 class RaygunClientFactory implements Factory
