@@ -2,18 +2,12 @@
 
 namespace SilverStripe\Raygun;
 
+use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Factory;
 use Raygun4php\RaygunClient;
 
 class RaygunClientFactory implements Factory
 {
-
-    /**
-     * The environment variable used to assign the Raygun api key
-     *
-     * @var string
-     */
-    const RAYGUN_APP_KEY_NAME = 'SS_RAYGUN_APP_KEY';
 
     /**
      * @var Raygun4php\RaygunClient
@@ -29,11 +23,11 @@ class RaygunClientFactory implements Factory
     public function create($service, array $params = [])
     {
         // extract api key from .env file
-        $apiKey = (string) getenv(self::RAYGUN_APP_KEY_NAME);
+        $apiKey = Environment::getEnv('SS_RAYGUN_APP_KEY');
 
         // log error to warn user that exceptions will not be logged to Raygun
         if (empty($apiKey)) {
-            $name = self::RAYGUN_APP_KEY_NAME;
+            $name = Environment::getEnv('SS_RAYGUN_APP_KEY');
             error_log("You need to set the {$name} environment variable in order to log to Raygun.");
         }
 
@@ -53,8 +47,7 @@ class RaygunClientFactory implements Factory
             'SS_DATABASE_PASSWORD' => true,
             'SS_DEFAULT_ADMIN_USERNAME' => true,
             'SS_DEFAULT_ADMIN_PASSWORD' => true,
-            self::RAYGUN_APP_KEY_NAME => true,
+            Environment::getEnv('SS_RAYGUN_APP_KEY') => true,
         ]);
     }
-
 }
