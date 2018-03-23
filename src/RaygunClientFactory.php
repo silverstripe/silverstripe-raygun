@@ -45,16 +45,34 @@ class RaygunClientFactory implements Factory
         return $this->client;
     }
 
+    /**
+     * Filter out password authentication information
+     *
+     * Also filter out any defined server variables, most notably SS_ environment variables
+     * that end with either '_USERNAME', '_PASSWORD' or '_KEY', e.g.
+     * SS_DATABASE_USERNAME
+     * SS_DATABASE_PASSWORD
+     * MY_THIRD_PARTY_API_KEY
+     *
+     * On some hosting providers, variables defined in .env will end up in $_SERVER
+     */
     protected function filterSensitiveData()
     {
-        // Filter sensitive data out of server variables
-        $this->client->setFilterParams([
-            'SS_DATABASE_USERNAME' => true,
-            'SS_DATABASE_PASSWORD' => true,
-            'SS_DEFAULT_ADMIN_USERNAME' => true,
-            'SS_DEFAULT_ADMIN_PASSWORD' => true,
-            self::RAYGUN_APP_KEY_NAME => true,
-        ]);
+        $filterParams = [
+            'php_auth_pw',
+            '/password/i',
+            self::RAYGUN_APP_KEY_NAME
+        ];
+        foreach(array_keys($_SERVER) as $key) {
+            $substr9 = substr($key, -9);
+            if (substr($key, -4) === '_KEY'
+                || $substr9 === '_USERNAME'
+                || $substr9 === '_PASSWORD'
+            ) {
+                $filterParams[] = $key;
+            }
+        }
+        $this->client->setFilterParams($filterParams);
     }
 
 }
