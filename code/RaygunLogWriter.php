@@ -92,6 +92,7 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	function getClient() {
 		if(!$this->client) {
 			$this->client = new \Raygun4php\RaygunClient($this->apiKey);
+			$this->filterSensitiveData();
 		}
 
 		return $this->client;
@@ -102,6 +103,17 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	 */
 	function setClient($client) {
 		$this->client = $client;
+	}
+
+	protected function filterSensitiveData() {
+		// Filter sensitive data out of server variables
+		$this->client->setFilterParams(array(
+			'SS_DATABASE_USERNAME' => true,
+			'SS_DATABASE_PASSWORD' => true,
+			'SS_DEFAULT_ADMIN_USERNAME' => true,
+			'SS_DEFAULT_ADMIN_PASSWORD' => true,
+			'SS_RAYGUN_APP_KEY' => true
+		));
 	}
 }
 
