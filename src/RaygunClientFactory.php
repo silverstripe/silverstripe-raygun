@@ -16,7 +16,7 @@ class RaygunClientFactory implements Factory
     const RAYGUN_APP_KEY_NAME = 'SS_RAYGUN_APP_KEY';
 
     /**
-     * @var Raygun4php\RaygunClient
+     * @var RaygunClient
      */
     protected $client;
 
