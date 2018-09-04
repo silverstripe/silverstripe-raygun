@@ -3,6 +3,7 @@
 namespace SilverStripe\Raygun;
 
 use SilverStripe\Core\Injector\Factory;
+use SilverStripe\Core\Environment;
 use Raygun4php\RaygunClient;
 
 class RaygunClientFactory implements Factory
@@ -29,12 +30,12 @@ class RaygunClientFactory implements Factory
     public function create($service, array $params = [])
     {
         // extract api key from .env file
-        $apiKey = (string) getenv(self::RAYGUN_APP_KEY_NAME);
+        $apiKey = (string) Environment::getEnv(self::RAYGUN_APP_KEY_NAME);
 
         // log error to warn user that exceptions will not be logged to Raygun
         if (empty($apiKey)) {
             $name = self::RAYGUN_APP_KEY_NAME;
-            error_log("You need to set the {$name} environment variable in order to log to Raygun.");
+            user_error("You need to set the {$name} environment variable in order to log to Raygun.", E_USER_WARNING);
         }
 
         // setup new client
