@@ -2,6 +2,8 @@
 require_once BASE_PATH . '/vendor/autoload.php';
 require_once THIRDPARTY_PATH . '/Zend/Log/Writer/Abstract.php';
 
+use Raygun4php\RaygunClient;
+
 class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 
 	/**
@@ -11,14 +13,26 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	private static $api_key;
 
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected $apiKey;
 
 	/**
-	 * @var \Raygun4php\RaygunClient
+	 * @var RaygunClient
 	 */
 	protected $client;
+
+	/**
+	 * @config
+	 * @var array Parameters to filter from sending to Raygun. {@link RaygunClient::filterParamsFromMessage}
+	 */
+	private static $filter_params = [
+		'SS_DATABASE_USERNAME' => true,
+		'SS_DATABASE_PASSWORD' => true,
+		'SS_DEFAULT_ADMIN_USERNAME' => true,
+		'SS_DEFAULT_ADMIN_PASSWORD' => true,
+		'SS_RAYGUN_APP_KEY' => true
+	];
 
 	/**
 	 * @param String $apiKey
@@ -87,11 +101,11 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	}
 
 	/**
-	 * @return \Raygun4php\RaygunClient
+	 * @return RaygunClient
 	 */
 	function getClient() {
 		if(!$this->client) {
-			$this->client = new \Raygun4php\RaygunClient($this->apiKey);
+			$this->client = new RaygunClient($this->apiKey);
 			$this->filterSensitiveData();
 		}
 
@@ -99,21 +113,14 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	}
 
 	/**
-	 * @param \Raygun4php\RaygunClient
+	 * @param RaygunClient
 	 */
 	function setClient($client) {
 		$this->client = $client;
 	}
 
 	protected function filterSensitiveData() {
-		// Filter sensitive data out of server variables
-		$this->client->setFilterParams(array(
-			'SS_DATABASE_USERNAME' => true,
-			'SS_DATABASE_PASSWORD' => true,
-			'SS_DEFAULT_ADMIN_USERNAME' => true,
-			'SS_DEFAULT_ADMIN_PASSWORD' => true,
-			'SS_RAYGUN_APP_KEY' => true
-		));
+		$this->client->setFilterParams(Config::inst()->get('RaygunLogWriter', 'filter_params'));
 	}
 }
 
