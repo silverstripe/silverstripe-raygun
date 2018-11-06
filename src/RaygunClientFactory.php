@@ -55,6 +55,9 @@ class RaygunClientFactory implements Factory
             'SS_DEFAULT_ADMIN_USERNAME' => true,
             'SS_DEFAULT_ADMIN_PASSWORD' => true,
             self::RAYGUN_APP_KEY_NAME => true,
+            'HTTP_AUTHORIZATION' => true,
+            'PHP_AUTH_PW' => true,
+            'Authorization' => true,
         ]);
     }
 
