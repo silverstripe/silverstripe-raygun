@@ -31,7 +31,8 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 		'SS_DATABASE_PASSWORD' => true,
 		'SS_DEFAULT_ADMIN_USERNAME' => true,
 		'SS_DEFAULT_ADMIN_PASSWORD' => true,
-		'SS_RAYGUN_APP_KEY' => true
+		'SS_RAYGUN_APP_KEY' => true,
+		'Authorization' => true,
 	];
 
 	/**
