@@ -27,14 +27,16 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	 * @var array Parameters to filter from sending to Raygun. {@link RaygunClient::filterParamsFromMessage}
 	 */
 	private static $filter_params = [
-		'SS_DATABASE_USERNAME' => true,
-		'SS_DATABASE_PASSWORD' => true,
-		'SS_DEFAULT_ADMIN_USERNAME' => true,
-		'SS_DEFAULT_ADMIN_PASSWORD' => true,
-		'SS_RAYGUN_APP_KEY' => true,
-		'HTTP_AUTHORIZATION' => true,
-		'PHP_AUTH_PW' => true,
+		'/SS_DATABASE_USERNAME/' => true,
+		'/SS_DATABASE_PASSWORD/' => true,
+		'/SS_DEFAULT_ADMIN_USERNAME/' => true,
+		'/SS_DEFAULT_ADMIN_PASSWORD/' => true,
+		'/SS_RAYGUN_APP_KEY/' => true,
+		'/HTTP_AUTHORIZATION/' => true,
+		'/PHP_AUTH_PW/' => true,
+		'/HTTP_COOKIE/' => true,
 		'Authorization' => true,
+		'Cookie' => true,
 	];
 
 	/**
