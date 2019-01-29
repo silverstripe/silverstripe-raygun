@@ -24,6 +24,7 @@ You can define the error reporting level in your YAML config:
 SilverStripe\Core\Injector\Injector:
   SilverStripe\Raygun\RaygunHandler:
     constructor:
+      client: '%$Raygun4php\RaygunClient'
       level: 'error'
 ```
 
