@@ -1,7 +1,8 @@
 ---
 Name: raygun
 ---
-SilverStripe\Raygun\disableUserTracking: false
+### Disable Raygun user tracking to improve performance through caching ###
+SilverStripe\Raygun\disableUserTracking: true
 SilverStripe\Core\Injector\Injector:
   SilverStripe\Raygun\RaygunHandler:
     constructor:
