@@ -2,6 +2,7 @@
 
 namespace SilverStripe\Raygun;
 
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Factory;
 use SilverStripe\Core\Environment;
 use Raygun4php\RaygunClient;
@@ -31,6 +32,11 @@ class RaygunClientFactory implements Factory
     {
         // extract api key from .env file
         $apiKey = (string) Environment::getEnv(self::RAYGUN_APP_KEY_NAME);
+        $disableTracking = Config::inst()->get(
+            'SilverStripe\Raygun\disableUserTracking'
+        );
+        $disableTracking = is_bool($disableTracking) ? $disableTracking : false;
+
 
         // log error to warn user that exceptions will not be logged to Raygun
         if (empty($apiKey)) {
@@ -39,7 +45,12 @@ class RaygunClientFactory implements Factory
         }
 
         // setup new client
-        $this->client = new RaygunClient($apiKey);
+        $this->client = new RaygunClient(
+            $apiKey,
+            true,
+            false,
+            $disableTracking
+        );
 
         $this->filterSensitiveData();
 
