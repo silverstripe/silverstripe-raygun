@@ -12,9 +12,10 @@
         }
     ],
     "require": {
+        "php": ">=5.6.0",
         "mindscape/raygun4php": "^1",
         "silverstripe/framework": "^4.0",
-        "graze/monolog-extensions": "^1.6"
+        "graze/monolog-extensions": "^2"
     },
     "autoload": {
         "psr-4": {
