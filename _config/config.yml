@@ -1,6 +1,7 @@
 ---
 Name: raygun
 ---
+SilverStripe\Raygun\disableUserTracking: false
 SilverStripe\Core\Injector\Injector:
   SilverStripe\Raygun\RaygunHandler:
     constructor:
