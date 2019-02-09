@@ -1,8 +1,10 @@
 ---
 Name: raygun
 ---
-### Disable Raygun user tracking to improve performance through caching ###
-SilverStripe\Raygun\disableUserTracking: true
+# Setting to disable Raygun user tracking.
+# Avoids setting a cookie and hence improve performance
+Raygun4php\RaygunClient:
+  disable_user_tracking: true
 SilverStripe\Core\Injector\Injector:
   SilverStripe\Raygun\RaygunHandler:
     constructor:

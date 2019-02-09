@@ -33,7 +33,7 @@ class RaygunClientFactory implements Factory
         // extract api key from .env file
         $apiKey = (string) Environment::getEnv(self::RAYGUN_APP_KEY_NAME);
         $disableTracking = Config::inst()->get(
-            'SilverStripe\Raygun\disableUserTracking'
+            RaygunClient::class, 'disable_user_tracking'
         );
         $disableTracking = is_bool($disableTracking) ? $disableTracking : false;
 
