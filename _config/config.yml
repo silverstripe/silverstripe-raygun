@@ -12,6 +12,7 @@ SilverStripe\Core\Injector\Injector:
   Raygun4php\RaygunClient:
     factory: 'SilverStripe\Raygun\RaygunClientFactory'
 ---
+Name: defaultraygunloggerhandler
 Only:
   envorconstant: 'SS_RAYGUN_APP_KEY'
 ---
