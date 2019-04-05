@@ -1,4 +1,4 @@
-# RayGun.io integration for SilverStripe
+# RayGun.com integration for SilverStripe
 
 This is a simple module that binds RayGun.io to the error & exception handler of SilverStripe.
 
