@@ -10,11 +10,6 @@
             "name": "Sam Minnee",
             "homepage": "http://github.com/sminnee"
         }
-        {
-            "name": "Sumitra Manga",
-            "homepage": "https://github.com/sumitramanga"
-        
-        }
     ],
     "require": {
         "php": ">=5.6.0",
