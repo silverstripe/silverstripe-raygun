@@ -1,8 +1,8 @@
 {
     "name": "silverstripe/raygun",
     "type": "silverstripe-vendormodule",
-    "description": "RayGun.io integration for SilverStripe",
-    "homepage": "http://github.com/silverstripe/silverstripe-raygun",
+    "description": "Raygun integration for SilverStripe",
+    "homepage": "https://github.com/silverstripe/silverstripe-raygun",
     "license": "BSD-3-Clause",
     "keywords": ["silverstripe", "raygun", "logging"],
     "authors": [
