@@ -16,6 +16,18 @@ Add the following to your `.env` file:
 SS_RAYGUN_APP_KEY="dwhouq3845y98uiof=="
 ```
 
+If you want to track JavaScript errors in CMS, you can activate `LeftAndMainExtension` in your project YAML configs:
+
+```yml
+---
+Name: raygunning-left-and-main
+---
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - SilverStripe\Raygun\LeftAndMainExtension
+
+```
+
 #### Set Log Level
 
 You can define the error reporting level in your YAML config:
