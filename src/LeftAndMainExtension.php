@@ -23,7 +23,7 @@ class LeftAndMainExtension extends Extension
         if (empty($apiKey)) {
             Requirements::insertHeadTags('<!-- Raygun: SS_RAYGUN_APP_KEY is undefined -->');
         } else {
-            Requirements::insertHeadTags($htmlBlock = <<<HTML
+            $htmlBlock = <<<HTML
 <!-- Raygun -->
 <script type="text/javascript">
   !function(a,b,c,d,e,f,g,h){a.RaygunObject=e,a[e]=a[e]||function(){
@@ -40,8 +40,8 @@ class LeftAndMainExtension extends Extension
   rg4js('enableCrashReporting', true);
 </script>
 <!-- End Raygun crash reporting -->
-HTML, hash('crc32', $htmlBlock).'-'.$apiKey
-            );
+HTML;
+            Requirements::insertHeadTags($htmlBlock, hash('crc32', $htmlBlock).'-'.$apiKey);
         }
     }
 }
