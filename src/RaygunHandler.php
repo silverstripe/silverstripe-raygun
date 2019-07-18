@@ -12,7 +12,8 @@ class RaygunHandler extends MonologRaygunHandler
     protected function write(array $record)
     {
         $disableTracking = Config::inst()->get(
-            RaygunClient::class, 'disable_user_tracking'
+            RaygunClient::class,
+            'disable_user_tracking'
         );
         $disableTracking = is_bool($disableTracking) ? $disableTracking : false;
 

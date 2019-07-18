@@ -11,6 +11,8 @@ use SilverStripe\View\Requirements;
  */
 class LeftAndMainExtension extends Extension
 {
+    use CustomAppKeyProvider;
+
     /**
      * It may seem weird we're using this extension point to register raygun, but
      * that's important to register it before the other scripts start executing,
@@ -18,10 +20,10 @@ class LeftAndMainExtension extends Extension
      */
     public function accessedCMS()
     {
-        $apiKey = Environment::getEnv('SS_RAYGUN_APP_KEY');
+        $apiKey = $this->getCustomRaygunAppKey() ?? Environment::getEnv(RaygunClientFactory::RAYGUN_APP_KEY_NAME);
 
         if (empty($apiKey)) {
-            Requirements::insertHeadTags('<!-- Raygun: SS_RAYGUN_APP_KEY is undefined -->');
+            Requirements::insertHeadTags('<!-- Raygun app key is undefined -->');
         } else {
             $htmlBlock = <<<HTML
 <!-- Raygun -->
@@ -41,7 +43,7 @@ class LeftAndMainExtension extends Extension
 </script>
 <!-- End Raygun crash reporting -->
 HTML;
-            Requirements::insertHeadTags($htmlBlock, hash('crc32', $htmlBlock).'-'.$apiKey);
+            Requirements::insertHeadTags($htmlBlock, hash('crc32', $htmlBlock) . '-' . $apiKey);
         }
     }
 }
