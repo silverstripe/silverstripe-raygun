@@ -25,7 +25,6 @@ Name: raygunning-left-and-main
 SilverStripe\Admin\LeftAndMain:
   extensions:
     - SilverStripe\Raygun\LeftAndMainExtension
-
 ```
 
 #### Set Log Level
@@ -38,6 +37,62 @@ SilverStripe\Core\Injector\Injector:
     constructor:
       client: '%$Raygun4php\RaygunClient'
       level: 'error'
+```
+
+#### Multiple Raygun API Keys (app keys)
+
+You may have more than one Raygun integration, each of which could use custom API keys, different
+from the default one (set by `SS_RAYGUN_APP_KEY`). To do so you'll need to configure each one of them separately. Here are some examples:
+
+```yml
+# Here's an example of the LeftAndMainExtension using a custom raygun
+# API Key, set through a custom environment variable (SS_CUSTOM_RAYGUN_APP_KEY)
+
+---
+Name: custom-raygun-leftnmain-extension
+---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Raygun\LeftAndMainExtension.custom:
+    class: SilverStripe\Raygun\LeftAndMainExtension
+    properties:
+      # You'll have to set the SS_CUSTOM_RAYGUN_APP_KEY environment var
+      CustomRaygunAppKey: '`SS_CUSTOM_RAYGUN_APP_KEY`'
+
+---
+Name: raygunning-left-and-main
+After: custom-raygun-leftnmain-extension
+---
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - SilverStripe\Raygun\LeftAndMainExtension.custom
+```
+
+```yml
+# Here's an example of a custom Raygun handler for Monolog
+# which uses API Key provided by a custom RaygunClientFactory
+
+---
+Name: custom-monolog-raygun-handler
+---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Raygun\RaygunClientFactory.custom:
+    class: SilverStripe\Raygun\RaygunClientFactory
+    properties:
+      # You'll have to set the SS_CUSTOM_RAYGUN_APP_KEY environment var
+      CustomRaygunAppKey: '`SS_CUSTOM_RAYGUN_APP_KEY`'
+
+  Raygun4php\RaygunClient.custom:
+    factory: '%$SilverStripe\Raygun\RaygunClientFactory.custom'
+
+  SilverStripe\Raygun\RaygunHandler.custom:
+    class: SilverStripe\Raygun\RaygunHandler
+    constructor:
+      client: '%$Raygun4php\RaygunClient.custom'
+      level: 'debug'
+
+  Psr\Log\LoggerInterface:
+    calls:
+      - [ pushHandler, [ '%$SilverStripe\Raygun\RaygunHandler.custom'] ]
 ```
 
 ## Filtering

@@ -10,6 +10,7 @@ use Raygun4php\RaygunClient;
 
 class RaygunClientFactory implements Factory
 {
+    use CustomAppKeyProvider;
 
     /**
      * The environment variable used to assign the Raygun api key
@@ -32,12 +33,12 @@ class RaygunClientFactory implements Factory
     public function create($service, array $params = [])
     {
         // extract api key from .env file
-        $apiKey = (string) Environment::getEnv(self::RAYGUN_APP_KEY_NAME);
+        $apiKey = $this->getCustomRaygunAppKey() ?? (string) Environment::getEnv(self::RAYGUN_APP_KEY_NAME);
         $disableTracking = Config::inst()->get(
-            RaygunClient::class, 'disable_user_tracking'
+            RaygunClient::class,
+            'disable_user_tracking'
         );
         $disableTracking = is_bool($disableTracking) ? $disableTracking : false;
-
 
         // log error to warn user that exceptions will not be logged to Raygun
         if (empty($apiKey) && !Director::isDev()) {
@@ -74,5 +75,4 @@ class RaygunClientFactory implements Factory
             'Cookie' => true,
         ]);
     }
-
 }
