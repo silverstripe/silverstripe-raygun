@@ -48,10 +48,11 @@ class RaygunLogWriter extends Zend_Log_Writer_Abstract {
 	}
 
 	function _write($message) {
-		// keep track of the current user (if available) so we can identify it in Raygun
-		if(Member::currentUserID()) {
-			$this->getClient()->SetUser(Member::currentUser()->Email);
-		}
+        $disableTracking = (bool)Config::inst()->get('Raygun4php\RaygunClient', 'disable_user_tracking');
+        // keep track of the current user (if available) so we can identify it in Raygun
+        if (!$disableTracking && Member::currentUserID()) {
+            $this->getClient()->SetUser(Member::currentUser()->Email);
+        }
 
 		// Reverse-engineer the SilverStripe-repackaged exception
 		$ex = $this->getException($message);

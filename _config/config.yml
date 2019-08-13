@@ -1,0 +1,5 @@
+---
+Name: raygun
+---
+Raygun4php\RaygunClient:
+  disable_user_tracking: true
