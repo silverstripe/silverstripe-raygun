@@ -156,4 +156,7 @@ class ReportedException {
 	function getLine() {
 		return $this->data['errline'];
 	}
+	function getPrevious() {
+		return null;
+	}
 }
