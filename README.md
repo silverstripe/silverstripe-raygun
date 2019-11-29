@@ -39,10 +39,12 @@ Raygun will send the following data:
 By default we filter out some sensitive SilverStripe details which appear in the $_SERVER variable. These include:
 
 - SS_DATABASE_USERNAME
-- SS_DATABASE_PASSWORD
 - SS_DEFAULT_ADMIN_USERNAME
-- SS_DEFAULT_ADMIN_PASSWORD
 - SS_RAYGUN_APP_KEY
+- Cookie information (through `Cookie` and `HTTP_COOKIE`)
+- Basic auth information (through `PHP_AUTH_PW`)
+- HTTP authorisation information (through `Authorization` and `HTTP_AUTHORIZATION`)
+- Anything containing `_PASSWORD`, `_KEY` or `_TOKEN`
 
 You will likely want to filter out other sensitive data such as credit cards, passwords etc. You can do this in your `mysite/_config.php` file. These rules are applied to $_SERVER, $_POST and $_GET data. All key comparisons are case insensitive.
 

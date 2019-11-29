@@ -51,9 +51,11 @@ class RaygunClientFactory implements Factory
         // Filter sensitive data out of server variables
         $this->client->setFilterParams([
             '/SS_DATABASE_USERNAME/' => true,
-            '/SS_DATABASE_PASSWORD/' => true,
             '/SS_DEFAULT_ADMIN_USERNAME/' => true,
-            '/SS_DEFAULT_ADMIN_PASSWORD/' => true,
+            '/KEY/i' => true,
+            '/TOKEN/i' => true,
+            '/PASSWORD/i' => true,
+            '/SECRET/i' => true,
             sprintf('/%s/', self::RAYGUN_APP_KEY_NAME) => true,
             '/HTTP_AUTHORIZATION/' => true,
             '/PHP_AUTH_PW/' => true,
