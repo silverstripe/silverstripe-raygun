@@ -44,7 +44,7 @@ By default we filter out some sensitive SilverStripe details which appear in the
 - Cookie information (through `Cookie` and `HTTP_COOKIE`)
 - Basic auth information (through `PHP_AUTH_PW`)
 - HTTP authorisation information (through `Authorization` and `HTTP_AUTHORIZATION`)
-- Anything containing `_PASSWORD`, `_KEY` or `_TOKEN`
+- Anything containing `PASSWORD`, `KEY`, `SECRET` or `TOKEN` (case insensitive)
 
 You will likely want to filter out other sensitive data such as credit cards, passwords etc. You can do this in your `mysite/_config.php` file. These rules are applied to $_SERVER, $_POST and $_GET data. All key comparisons are case insensitive.
 
