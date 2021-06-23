@@ -4,7 +4,7 @@ Name: raygun
 SilverStripe\Core\Injector\Injector:
   SilverStripe\Raygun\RaygunHandler:
     constructor:
-      RaygunClient: %$Raygun4php\RaygunClient
+      RaygunClient: '%$Raygun4php\RaygunClient'
   Raygun4php\RaygunClient:
     factory: 'SilverStripe\Raygun\RaygunClientFactory'
 ---
@@ -14,4 +14,4 @@ Only:
 SilverStripe\Core\Injector\Injector:
   Psr\Log\LoggerInterface:
     calls:
-      - [ pushHandler, [ %$SilverStripe\Raygun\RaygunHandler ]]
+      - [ pushHandler, [ '%$SilverStripe\Raygun\RaygunHandler' ]]
