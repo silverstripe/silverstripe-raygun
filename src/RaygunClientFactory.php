@@ -54,6 +54,15 @@ class RaygunClientFactory implements Factory
             $disableTracking
         );
 
+        // set proxy
+        if (!empty($params['proxyHost'])) {
+            $proxy = $params['proxyHost'];
+            if (!empty($params['proxyPort'])) {
+                $proxy .= ':' . $params['proxyPort'];
+            }
+            $this->client->setProxy($proxy);
+        }
+
         $this->filterSensitiveData();
 
         return $this->client;
