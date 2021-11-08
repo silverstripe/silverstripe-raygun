@@ -95,6 +95,18 @@ SilverStripe\Core\Injector\Injector:
       - [ pushHandler, [ '%$SilverStripe\Raygun\RaygunHandler.custom'] ]
 ```
 
+#### Proxy
+
+If you need to forward outgoing requests through a proxy (such as for sites hosted in CWP), you can set the proxy host and optional port via yaml config:
+
+```yml
+SilverStripe\Core\Injector\Injector:
+  Raygun4php\RaygunClient:
+    constructor:
+      proxyHost: '`SS_OUTBOUND_PROXY`'
+      proxyPort: '`SS_OUTBOUND_PROXY_PORT`'
+```
+
 ## Filtering
 
 Raygun will send the following data:
