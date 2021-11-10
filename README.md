@@ -39,6 +39,24 @@ SilverStripe\Core\Injector\Injector:
       level: 'error'
 ```
 
+#### User tracking
+
+By default, no user data will be sent to Raygun at all. You can choose to track logged-in members by setting some yml configuration:
+
+```yml
+---
+After: raygun
+---
+Raygun4php\RaygunClient:
+  disable_user_tracking: false
+
+SilverStripe\Raygun\RaygunHandler:
+  user_main_id_field: 'ID' #default: 'Email'. This is the "Identifier" in the Raygun app.
+  user_include_firstname: true #default: false
+  user_include_fullname: true #default: false
+  user_include_email: true #default: false
+```
+
 #### Multiple Raygun API Keys (app keys)
 
 You may have more than one Raygun integration, each of which could use custom API keys, different
