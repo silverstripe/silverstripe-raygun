@@ -113,6 +113,48 @@ SilverStripe\Core\Injector\Injector:
       - [ pushHandler, [ '%$SilverStripe\Raygun\RaygunHandler.custom'] ]
 ```
 
+#### Disable handler
+
+The RaygunHandler is enabled by default when the `SS_RAYGUN_APP_KEY` environment variable is set. There may be some situations where you need that variable to be set but you don't want the handler enabled by default (e.g. you may not want the handler enabled in dev or test environments except when triggering some test exception via a `BuildTask`).
+
+```yml
+---
+Only:
+  environment: 'dev'
+---
+SilverStripe\Raygun\RaygunHandler:
+  enabled: false
+```
+
+Then in your `BuildTask` you can enable that handler as required.
+
+```php
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Dev\BuildTask;
+use SilverStripe\Raygun\RaygunHandler;
+
+class TriggerTestExtensionTask extends BuildTask
+{
+    protected $title = 'Trigger Test Exception';
+
+    protected $description = 'Throws an exception. Useful for checking raygun integration is working as expected.';
+
+    /**
+     * Throw a test exception that is directed through raygun.
+     *
+     * @param HTTPRequest $request
+     */
+    public function run($request)
+    {
+        $env = Director::get_environment_type();
+        Config::modify()->set(RaygunHandler::class, 'enabled', true);
+        throw new \Exception("Test exception thrown from '$env' environment.");
+    }
+}
+```
+
 #### Proxy
 
 If you need to forward outgoing requests through a proxy (such as for sites hosted in CWP), you can set the proxy host and optional port via yaml config:
