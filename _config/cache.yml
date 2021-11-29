@@ -1,0 +1,8 @@
+---
+Name: raygun-cache
+---
+SilverStripe\Core\Injector\Injector:
+  Psr\SimpleCache\CacheInterface.raygunCache:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      namespace: "raygunCache"

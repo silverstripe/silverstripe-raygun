@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=7.1",
-        "mindscape/raygun4php": "^1",
+        "mindscape/raygun4php": "^1 || ^2",
         "silverstripe/framework": "^4.3"
     },
     "autoload": {
