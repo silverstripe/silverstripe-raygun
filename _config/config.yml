@@ -8,7 +8,7 @@ Raygun4php\RaygunClient:
 SilverStripe\Core\Injector\Injector:
   SilverStripe\Raygun\RaygunHandler:
     constructor:
-      RaygunClient: '%$Raygun4php\RaygunClient'
+      client: '%$Raygun4php\RaygunClient'
   Raygun4php\RaygunClient:
     factory: 'SilverStripe\Raygun\RaygunClientFactory'
 ---
