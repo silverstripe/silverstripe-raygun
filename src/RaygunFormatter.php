@@ -1,5 +1,11 @@
 <?php
-/*
+
+namespace SilverStripe\Raygun;
+
+use Monolog\Formatter\NormalizerFormatter;
+use Monolog\LogRecord;
+
+/**
  * This file was originally part of Monolog Extensions
  *
  * The MIT License (MIT)
@@ -24,24 +30,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @see  http://github.com/graze/MonologExtensions/blob/master/LICENSE
+ * @see http://github.com/graze/MonologExtensions/blob/master/LICENSE
  * @link http://github.com/graze/MonologExtensions
  */
-
-namespace SilverStripe\Raygun;
-
-use Monolog\Formatter\NormalizerFormatter;
-
 class RaygunFormatter extends NormalizerFormatter
 {
     /**
      * {@inheritdoc}
      *
-     * @param  array $record A record to format
-     *
+     * @param LogRecord $record A record to format
      * @return mixed The formatted record
      */
-    public function format(array $record)
+    public function format(LogRecord $record)
     {
         $record = parent::format($record);
 
@@ -53,14 +53,17 @@ class RaygunFormatter extends NormalizerFormatter
             if (array_key_exists('tags', $record[$source]) && is_array($record[$source]['tags'])) {
                 $record['tags'] = array_merge($record['tags'], $record[$source]['tags']);
             }
+
             if (array_key_exists('timestamp', $record[$source]) && is_numeric($record[$source]['timestamp'])) {
                 $record['timestamp'] = $record[$source]['timestamp'];
             }
+
             unset($record[$source]['tags'], $record[$source]['timestamp']);
         }
 
         $record['custom_data'] = $record['extra'];
         $record['extra'] = [];
+
         foreach ($record['context'] as $key => $item) {
             if (!in_array($key, ['file', 'line', 'exception'])) {
                 $record['custom_data'][$key] = $item;

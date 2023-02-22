@@ -9,10 +9,12 @@ use Raygun4php\RaygunClient;
 use Raygun4php\Transports\GuzzleAsync;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\CoreKernel;
 use SilverStripe\Core\Environment;
 use SilverStripe\Core\Flushable;
 use SilverStripe\Core\Injector\Factory;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Kernel;
 use SilverStripe\Core\Path;
 
 class RaygunClientFactory implements Factory, Flushable
@@ -27,7 +29,7 @@ class RaygunClientFactory implements Factory, Flushable
     const RAYGUN_APP_KEY_NAME = 'SS_RAYGUN_APP_KEY';
 
     /**
-     * @var Raygun4php\RaygunClient
+     * @var RaygunClient
      */
     protected $client;
 
@@ -80,9 +82,11 @@ class RaygunClientFactory implements Factory, Flushable
         // Set proxy
         if (!empty($params['proxyHost'])) {
             $proxy = $params['proxyHost'];
+
             if (!empty($params['proxyPort'])) {
                 $proxy .= ':' . $params['proxyPort'];
             }
+
             $this->client->setProxy($proxy);
         }
     }
@@ -101,9 +105,11 @@ class RaygunClientFactory implements Factory, Flushable
         // Set proxy
         if (!empty($params['proxyHost'])) {
             $proxy = $params['proxyHost'];
+
             if (!empty($params['proxyPort'])) {
                 $proxy .= ':' . $params['proxyPort'];
             }
+
             $transportConfig['proxy'] = $proxy;
         }
 
@@ -144,28 +150,51 @@ class RaygunClientFactory implements Factory, Flushable
     public static function getSdkVersion()
     {
         $cache = Injector::inst()->get(CacheInterface::class . '.raygunCache');
+        /** @var CoreKernel $kernel */
+        $kernel = Injector::inst()->get(Kernel::class);
+
         // If the SDK version isn't cached, get it from the composer.lock file.
         // Note that this is called before flushing has occurred - if we're flushing, bypass the cache for now.
-        if (Director::isManifestFlushed() || !$version = $cache->get('raygun4phpVersion')) {
+        if ($kernel->isFlushed() || !$version = $cache->get('raygun4phpVersion')) {
             $composerLockRaw = file_get_contents(Path::join(Director::baseFolder(), 'composer.lock'));
+
             if (!$composerLockRaw) {
                 throw new LogicException('composer.lock file is missing.');
             }
+
             $packageList = json_decode($composerLockRaw, true)['packages'];
+
             foreach ($packageList as $package) {
                 if ($package['name'] === 'mindscape/raygun4php') {
                     $version = $package['version'];
                     break;
                 }
             }
+
             if (!$version) {
                 throw new LogicException('mindscape/raygun4php not found in composer.lock');
             }
+
             // Cache the SDK version so we don't have to do this every request.
             $cache->set('raygun4phpVersion', $version);
         }
 
         return $version;
+    }
+
+    private static function isManifestFlushed(): bool
+    {
+        $kernel = Injector::inst()->get(Kernel::class);
+
+        // Only CoreKernel implements this method at the moment
+        // Introducing it to the Kernel interface is a breaking change
+        if (method_exists($kernel, 'isFlushed')) {
+            return $kernel->isFlushed();
+        }
+
+        $classManifest = $kernel->getClassLoader()->getManifest();
+
+        return $classManifest->isFlushed();
     }
 
     public static function flush()

@@ -1,5 +1,19 @@
 <?php
-/*
+
+namespace SilverStripe\Raygun;
+
+use Exception;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Level;
+use Monolog\LogRecord;
+use Raygun4php\RaygunClient;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Security\Security;
+use Throwable;
+
+/**
  * The bulk of this file was originally part of Monolog Extensions
  *
  * The MIT License (MIT)
@@ -24,54 +38,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @see  http://github.com/graze/MonologExtensions/blob/master/LICENSE
+ * @see http://github.com/graze/MonologExtensions/blob/master/LICENSE
  * @link http://github.com/graze/MonologExtensions
  */
-
-namespace SilverStripe\Raygun;
-
-use Monolog\Handler\AbstractProcessingHandler;
-use Monolog\Logger;
-use Raygun4php\RaygunClient;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Security\Security;
-
 class RaygunHandler extends AbstractProcessingHandler
 {
     use Configurable;
 
-    private static $user_main_id_field = 'Email';
+    private static string $user_main_id_field = 'Email';
 
-    private static $user_include_firstname = false;
+    private static bool $user_include_firstname = false;
 
-    private static $user_include_fullname = false;
+    private static bool $user_include_fullname = false;
 
-    private static $user_include_email = false;
+    private static bool $user_include_email = false;
 
-    private static $enabled = true;
+    private static bool $enabled = true;
 
-    /**
-     * @var RaygunClient
-     */
-    protected $client;
+    protected RaygunClient $client;
 
-    /**
-     * @param RaygunClient $client
-     * @param int          $level
-     * @param bool         $bubble
-     */
-    public function __construct(RaygunClient $client, $level = Logger::DEBUG, $bubble = true)
+    public function __construct(RaygunClient $client, $level = Level::Debug, bool $bubble = true)
     {
         $this->client = $client;
 
         parent::__construct($level, $bubble);
     }
 
-    /**
-     * @param array $record
-     */
-    protected function write(array $record)
+    protected function write(LogRecord $record): void
     {
         // If not enabled, don't write anything.
         if (!(bool)$this->config()->get('enabled')) {
@@ -84,6 +77,7 @@ class RaygunHandler extends AbstractProcessingHandler
             'disable_user_tracking'
         );
         $disableTracking = is_bool($disableTracking) ? $disableTracking : false;
+
         if (!$disableTracking) {
             $user = Security::getCurrentUser();
             if ($user) {
@@ -98,42 +92,43 @@ class RaygunHandler extends AbstractProcessingHandler
         }
 
         // Write exceptions and errors appropriately.
-        $context = $record['context'];
+        $context = $record->context;
+        $formatted = $record->formatted;
+
         if (isset($context['exception'])
             && (
-                $context['exception'] instanceof \Exception
-                || (PHP_VERSION_ID > 70000 && $context['exception'] instanceof \Throwable)
+                $context['exception'] instanceof Exception
+                || (PHP_VERSION_ID > 70000 && $context['exception'] instanceof Throwable)
             )
         ) {
             $this->writeException(
                 $record,
-                $record['formatted']['tags'],
-                $record['formatted']['custom_data'],
-                $record['formatted']['timestamp']
+                $formatted['tags'],
+                $formatted['custom_data'],
+                $formatted['timestamp']
             );
         } elseif (isset($context['file']) && isset($context['line'])) {
             $this->writeError(
-                $record['formatted'],
-                $record['formatted']['tags'],
-                $record['formatted']['custom_data'],
-                $record['formatted']['timestamp']
+                $formatted,
+                $formatted['tags'],
+                $formatted['custom_data'],
+                $formatted['timestamp']
             );
         }
-        // do nothing if its not an exception or an error
+
+        // do nothing if it's not an exception or an error
     }
 
-    /**
-     * @param array     $record
-     * @param array     $tags
-     * @param array     $customData
-     * @param int|float $timestamp
-     */
-    protected function writeError(array $record, array $tags = [], array $customData = [], $timestamp = null)
-    {
-        $context = $record['context'];
+    protected function writeError(
+        LogRecord $record,
+        array $tags = [],
+        array $customData = [],
+        int|float|null $timestamp = null
+    ) {
+        $context = $record->context;
         $this->client->SendError(
             0,
-            $record['message'],
+            $record->message,
             $context['file'],
             $context['line'],
             $tags,
@@ -142,21 +137,16 @@ class RaygunHandler extends AbstractProcessingHandler
         );
     }
 
-    /**
-     * @param array     $record
-     * @param array     $tags
-     * @param array     $customData
-     * @param int|float $timestamp
-     */
-    protected function writeException(array $record, array $tags = [], array $customData = [], $timestamp = null)
-    {
-        $this->client->SendException($record['context']['exception'], $tags, $customData, $timestamp);
+    protected function writeException(
+        LogRecord $record,
+        array $tags = [],
+        array $customData = [],
+        int|float|null $timestamp = null
+    ) {
+        $this->client->SendException($record->context['exception'], $tags, $customData, $timestamp);
     }
 
-    /**
-     * @return \Monolog\Formatter\FormatterInterface
-     */
-    protected function getDefaultFormatter()
+    protected function getDefaultFormatter(): FormatterInterface
     {
         return new RaygunFormatter();
     }

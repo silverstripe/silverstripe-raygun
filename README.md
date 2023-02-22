@@ -1,6 +1,6 @@
-# Raygun integration for SilverStripe
+# Raygun integration for Silverstripe
 
-This is a simple module that binds Raygun to the error & exception handler of SilverStripe.
+This is a simple module that binds Raygun to the error & exception handler of Silverstripe.
 
 ## Installation
 
@@ -175,7 +175,7 @@ Raygun will send the following data:
 - $_SERVER
 - $_GET (included in URL also)
 
-By default we filter out some sensitive SilverStripe details which appear in the $_SERVER variable. These include:
+By default we filter out some sensitive Silverstripe details which appear in the $_SERVER variable. These include:
 
 - SS_DATABASE_USERNAME
 - SS_DEFAULT_ADMIN_USERNAME
