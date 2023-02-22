@@ -7,7 +7,7 @@ trait CustomAppKeyProvider
     /**
      * Use a custom APP Key instead of the globally defined SS_RAYGUN_APP_KEY
      */
-    private null|string $customRaygunAppKey;
+    private ?string $customRaygunAppKey = null;
 
     /**
      * Set a custom raygun app key that should be used instead of the
