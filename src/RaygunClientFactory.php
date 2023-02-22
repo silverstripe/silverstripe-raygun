@@ -182,21 +182,6 @@ class RaygunClientFactory implements Factory, Flushable
         return $version;
     }
 
-    private static function isManifestFlushed(): bool
-    {
-        $kernel = Injector::inst()->get(Kernel::class);
-
-        // Only CoreKernel implements this method at the moment
-        // Introducing it to the Kernel interface is a breaking change
-        if (method_exists($kernel, 'isFlushed')) {
-            return $kernel->isFlushed();
-        }
-
-        $classManifest = $kernel->getClassLoader()->getManifest();
-
-        return $classManifest->isFlushed();
-    }
-
     public static function flush()
     {
         $cache = Injector::inst()->get(CacheInterface::class . '.raygunCache');
