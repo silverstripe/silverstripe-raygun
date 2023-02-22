@@ -67,7 +67,7 @@ class RaygunHandler extends AbstractProcessingHandler
     protected function write(LogRecord $record): void
     {
         // If not enabled, don't write anything.
-        if (!(bool)$this->config()->get('enabled')) {
+        if (!$this->config()->get('enabled')) {
             return;
         }
 
@@ -80,27 +80,24 @@ class RaygunHandler extends AbstractProcessingHandler
 
         if (!$disableTracking) {
             $user = Security::getCurrentUser();
+
             if ($user) {
                 $idField = $this->config()->get('user_main_id_field');
                 $this->client->SetUser(
-                    (string)$user->$idField,
-                    (bool)$this->config()->get('user_include_firstname') ? $user->FirstName : null,
-                    (bool)$this->config()->get('user_include_fullname') ? $user->getName() : null,
-                    (bool)$this->config()->get('user_include_email') ? $user->Email : null
+                    (string) $user->$idField,
+                    $this->config()->get('user_include_firstname') ? $user->FirstName : null,
+                    $this->config()->get('user_include_fullname') ? $user->getName() : null,
+                    $this->config()->get('user_include_email') ? $user->Email : null
                 );
             }
         }
 
-        // Write exceptions and errors appropriately.
+        // Write exceptions and errors appropriately
         $context = $record->context;
         $formatted = $record->formatted;
+        $exception = $context['exception'] ?? null;
 
-        if (isset($context['exception'])
-            && (
-                $context['exception'] instanceof Exception
-                || (PHP_VERSION_ID > 70000 && $context['exception'] instanceof Throwable)
-            )
-        ) {
+        if ($exception instanceof Throwable) {
             $this->writeException(
                 $record,
                 $formatted['tags'],
