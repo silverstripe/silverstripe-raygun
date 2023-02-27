@@ -2,6 +2,15 @@
 
 This is a simple module that binds Raygun to the error & exception handler of Silverstripe.
 
+## Requirements
+
+* PHP ^8.1
+* Raygun4PHP ^2
+* Silverstripe Framework ^5
+
+Support for Silverstripe 3 can be found in version `^1`. Support for Silverstripe 4 can be found in versions `^2` and
+`^3`.
+
 ## Installation
 
 ```
