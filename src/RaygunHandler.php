@@ -106,7 +106,7 @@ class RaygunHandler extends AbstractProcessingHandler
             );
         } elseif (isset($context['file']) && isset($context['line'])) {
             $this->writeError(
-                $formatted,
+                $record,
                 $formatted['tags'],
                 $formatted['custom_data'],
                 $formatted['timestamp']
