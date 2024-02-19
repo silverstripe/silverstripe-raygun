@@ -211,5 +211,37 @@ $client->setFilterParams(array_merge($client->getFilterParams(), [
 ]));
 ```
 
+## Limit Raygun events
+
+Add the following to your YML configuration to limit sending one Raygun event per error message.
+
+```yml
+SilverStripe\Raygun\RaygunHandler:
+  enabled_limit: true
+
+```
+
+Error identified using the record fields (message, level.value, channel). It can be updated using the hook
+
+```php
+use Monolog\LogRecord;
+
+class RaygunExtension extends Extension {
+    public function updateErrorKey(&$errorKey, LogRecord $record) {
+        $errorKey = 'New value';
+    }
+}
+```
+
+## Reduce Raygun events frequency
+
+Add the following to your YML configuration, value is number of seconds.
+
+```yml
+SilverStripe\Raygun\RaygunHandler:
+  report_frequency: 300 # Similar error message sent to Raygun every 5 minutes
+
+```
+
 More information about accepted filtering formats is available
 in the [Raygun4php](https://github.com/MindscapeHQ/raygun4php) documentation.
