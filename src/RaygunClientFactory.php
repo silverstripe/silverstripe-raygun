@@ -35,7 +35,7 @@ class RaygunClientFactory implements Factory, Flushable
      *
      * {@inheritdoc}
      */
-    public function create($service, array $params = [])
+    public function create(string $service, array $params = []): ?object
     {
         // extract api key from .env file
         $apiKey = $this->getCustomRaygunAppKey() ?? (string) Environment::getEnv(self::RAYGUN_APP_KEY_NAME);
