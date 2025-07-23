@@ -7,11 +7,16 @@ use Monolog\Formatter\FormatterInterface;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Level;
 use Monolog\LogRecord;
+use Psr\SimpleCache\CacheInterface;
 use Raygun4php\RaygunClient;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Extensible;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Security\Security;
 use Throwable;
+use DateTime;
+use Monolog\DateTimeImmutable;
 
 /**
  * The bulk of this file was originally part of Monolog Extensions
@@ -43,7 +48,8 @@ use Throwable;
  */
 class RaygunHandler extends AbstractProcessingHandler
 {
-    use Configurable;
+    use Configurable,
+        Extensible;
 
     private static string $user_main_id_field = 'Email';
 
@@ -54,6 +60,22 @@ class RaygunHandler extends AbstractProcessingHandler
     private static bool $user_include_email = false;
 
     private static bool $enabled = true;
+
+    /**
+     * If enabled, it prevents sending the same error to Raygun
+     * to prevent running out of Raygun events.
+     *
+     * @config
+     */
+    private static bool $enabled_limit = false;
+
+    /**
+     * How often to report the same error. i.e. every x seconds (0: disabled)
+     * It is not relavent (ignored) if $enabled_limit enabled.
+     *
+     * @config
+     */
+    private static int $report_frequency = 0;
 
     protected RaygunClient $client;
 
@@ -67,7 +89,7 @@ class RaygunHandler extends AbstractProcessingHandler
     protected function write(LogRecord $record): void
     {
         // If not enabled, don't write anything.
-        if (!$this->config()->get('enabled')) {
+        if (!$this->config()->get('enabled') || !$this->isValidError($record)) {
             return;
         }
 
@@ -114,6 +136,81 @@ class RaygunHandler extends AbstractProcessingHandler
         }
 
         // do nothing if it's not an exception or an error
+    }
+
+    protected function isValidError(LogRecord $record): bool
+    {
+        // Cache instance
+        $cache = Injector::inst()->get(CacheInterface::class . '.raygunCache');
+
+        // String used to check if the error send to Raygun or not
+        $errorKey = hash('sha1', sprintf(
+            '%s%s%s',
+            $record->message,
+            $record->level->value,
+            $record->channel
+        ));
+
+        // Allow user to update error key
+        $this->extend('updateErrorKey', $errorKey, $record);
+
+        // Key used for internal cache
+        $cacheKey = sprintf('error_%s', $errorKey);
+
+        // Check if error reported previously
+        $cacheValue = $cache->get($cacheKey);
+
+        // If it is first time the error reported
+        if (!$cacheValue || !isset($cacheValue[1])) {
+            $cache->set($cacheKey, $this->getCacheRecord($record));
+            return true;
+        }
+
+        // If we are reporting error once, prevent sending event to Raygun
+        if ($this->config()->get('enabled_limit') && $cacheValue[1] > 0) {
+            $cache->set($cacheKey, $this->getCacheRecord($record, $cacheValue[1] + 1));
+            return false;
+        }
+
+        // If we allow limit frequency, then prevent sending event to Raygun if we didn't mean time
+        $reportFrequency = (int)$this->config()->get('report_frequency');
+
+        if ($reportFrequency) {
+            if ($this->isValidReportFrequency((string)$cacheValue[0], $reportFrequency)) {
+                $cache->set($cacheKey, $this->getCacheRecord($record, $cacheValue[1] + 1));
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if the record timestamp is after x seconds ($report_frequency)
+     */
+    protected function isValidReportFrequency(string $date, int $reportFrequency): bool
+    {
+        try {
+            $diffInSeconds = (new DateTime('now'))->getTimestamp() - (new DateTime($date))->getTimestamp();
+        } catch (Throwable $e) {
+            // If for whatever reason time caculation failed, then do not prevent reporting errors
+            $diffInSeconds = $reportFrequency;
+        }
+
+        return $diffInSeconds >= $reportFrequency;
+    }
+
+    /**
+     * Get record to store in cache
+     */
+    protected function getCacheRecord(LogRecord $record, int $counter = 1)
+    {
+        return [
+            $record->datetime,
+            $counter
+        ];
     }
 
     protected function writeError(

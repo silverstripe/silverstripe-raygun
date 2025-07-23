@@ -16,9 +16,13 @@
         "mindscape/raygun4php": "^2.3",
         "silverstripe/framework": "^6"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
     "autoload": {
         "psr-4": {
-            "SilverStripe\\Raygun\\": "src/"
+            "SilverStripe\\Raygun\\": "src/",
+            "SilverStripe\\Raygun\\Test\\": "tests/"
         }
     },
     "extra": {
@@ -33,5 +37,9 @@
             "composer/installers": true,
             "silverstripe/vendor-plugin": true
         }
+    },
+
+    "scripts": {
+        "test-phpunit": "phpunit -d memory_limit=512M -d flush=1"
     }
 }
